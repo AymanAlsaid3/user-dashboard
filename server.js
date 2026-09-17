@@ -3,9 +3,10 @@ import express from 'express';
 import userRoutes from './routes/users.js';
 import mongoose from 'mongoose';
 
-mongoose.connect(process.env.MONGO_URI, {useNewUrlParser: true, useUnifiedTopology:True})
-    .then(() => console.log('Connected to MongoDB successfully!'))
-    .catch(err => console.error('Failed to connect to MongoDB:', err));
+mongoose.connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+});
 const app = express();
 const PORT = process.env.PORT || 3000;
 app.use(express.static('public'));
