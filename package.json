@@ -1,0 +1,14 @@
+{
+  
+  "type": "module",
+  
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "express": "^4.x.x",
+    "mongoose": "^9.10.0"
+  },
+  "scripts": {
+    "start": "node server.js"
+  }
+ 
+}
