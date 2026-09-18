@@ -45,6 +45,18 @@ document.addEventListener ('DOMContentLoaded',()=>{
     });
 }
 });
+const searchInput = document.getElementById('searchInput');
+if (searchInput) 
+    {
+        searchInput.addEventListener('input', () => {
+            const searchTerm = searchInput.value.toLowerCase();
+            const filteredUsers = allusers.filter(user=>
+                user.name.toLowerCase.includes(searchTerm) || 
+                user.email.toLowerCase.includes(searchTerm)
+            );
+            renderUsers(filteredUsers);
+});
+        }
 runReaderApp();
 
 
