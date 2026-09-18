@@ -45,18 +45,24 @@ document.addEventListener ('DOMContentLoaded',()=>{
     });
 }
 });
-const searchInput = document.getElementById('searchInput');
-if (searchInput) 
-    {
-        searchInput.addEventListener('input', () => {
-            const searchTerm = searchInput.value.toLowerCase();
-            const filteredUsers = allusers.filter(user=>
-                user.name.toLowerCase.includes(searchTerm) || 
-                user.email.toLowerCase.includes(searchTerm)
-            );
-            renderUsers(filteredUsers);
-});
-        }
+function searchUsers() {
+    const searchInput = document.getElementById('searchInput');
+    
+    // Safety check: if the input doesn't exist, stop execution to prevent crashing
+    if (!searchInput) return;
+
+    const searchTerm = searchInput.value.toLowerCase();
+    
+    // Ensure allUsers is defined and loaded
+    if (typeof allUsers === 'undefined') return;
+
+    const filteredUsers = allUsers.filter(user => 
+        user.name.toLowerCase().includes(searchTerm) || 
+        user.email.toLowerCase().includes(searchTerm)
+    );
+        
+    renderUsers(filteredUsers);
+}
 runReaderApp();
 
 

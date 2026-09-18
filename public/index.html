@@ -27,7 +27,7 @@
         <form id="searchForm" action="/search" method="GET" class="search-bar">
             <input
                 type="search"
-                id="searchInput"
+                id="site-search"
                 name="q"
                 placeholder="search for users..."
                 aria-label="Search for users"
@@ -71,9 +71,7 @@
         }
 
         async function searchUsers() {
-            const searchInput = document.getElementById('searchInput');
-            if (!searchInput) return;
-            const searchTerm = searchInput.value.toLowerCase();
+            const query = document.getElementById('site-search').value.trim().toLowerCase();
 
             try {
                 const response = await fetch('/api/users');
@@ -83,10 +81,10 @@
 
                 const result = await response.json();
                 const users = Array.isArray(result.data) ? result.data : [];
-                const filteredUsers = searchInput
+                const filteredUsers = query
                     ? users.filter(user =>
-                        user.name.toLowerCase().includes(searchInput) ||
-                        user.email.toLowerCase().includes(searchInput)
+                        user.name.toLowerCase().includes(query) ||
+                        user.email.toLowerCase().includes(query)
                     )
                     : users;
 
