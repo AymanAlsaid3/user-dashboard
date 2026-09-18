@@ -63,6 +63,14 @@ function searchUsers() {
         
     renderUsers(filteredUsers);
 }
+document.addEventListener('DOMContentLoaded',()=>
+{
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput)
+    {
+        searchInput.addEventListener('input',searchUsers);
+    }
+})
 runReaderApp();
 
 
