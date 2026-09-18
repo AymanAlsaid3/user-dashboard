@@ -1,24 +1,58 @@
 <!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width= device-width,initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Management Dashboard</title>
     <style>
-        #notification {display: none;
-    padding: 10px 15px;
-    margin-bottom: 20px;
-    border-radius: 4px;
-    color: white;
-    font-weight: bold;
-    text-align: center;
-    transition: all 0.3s ease;}
-        body {font-family: Arial, Helvetica, sans-serif; max-width: 600px;margin: 40px auto; padding: 20px; background:#f4f4f9;}
-        .card {background: white; padding: 20px;border-radius: 8px;box-shadow: 0 2px 4px rgba(0, 0, 0, 1); margin-bottom: 20px;}
-        input {display: block; width: 100%;padding: 8px;margin-bottom: 10px;box-sizing: border-box;}
-        button {background: #007bff; color: white; border: none;padding: 10px 15px; cursor: pointer; border-radius: 4px;}
-        button:hover { background: #0056b3; }
-        ul {padding-left: 20px;}
-        li {margin-bottom: 8px;}
+        #notification {
+            display: none;
+            padding: 10px 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            color: white;
+            font-weight: bold;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 20px;
+            background: #f4f4f9;
+        }
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        input {
+            display: block;
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        ul {
+            padding-left: 20px;
+        }
+        li {
+            margin-bottom: 8px;
+        }
     </style>
 </head>
 <body>
@@ -33,14 +67,13 @@
                 aria-label="Search for users"
             >
             <button type="submit" aria-label="Submit search">
-                
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
                     <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
                 </svg>
             </button>
-            <a href="/api/users/export/csv" class="bg-blue-600 text-white px-3 py-2 rounded hover:bg-blue-700 transition inline-block text-center">
-    📥 Export Users (CSV)
-</a>
+            <a href="/api/users/export/csv" style="margin-top: 10px; display: inline-block; background-color: #2563eb; color: white; padding: 8px 12px; border-radius: 4px; text-decoration: none; text-align: center;">
+                📥 Export Users (CSV)
+            </a>
         </form>
 
         <form id="userForm">
@@ -59,52 +92,9 @@
     <script>
         const userList = document.getElementById('userList');
         const userForm = document.getElementById('userForm');
-        const searchForm = document.getElementById('searchForm');
-
-        function renderUsers(users) {
-            if (!Array.isArray(users) || users.length === 0) {
-                userList.innerHTML = '<li>No users found.</li>';
-                return;
-            }
-
-            userList.innerHTML = users.map(user => `<li>${user.name}</li>`).join('');
-        }
-
-        async function searchUsers() {
-            const query = document.getElementById('site-search').value.trim().toLowerCase();
-
-            try {
-                const response = await fetch('/api/users');
-                if (!response.ok) {
-                    throw new Error('Failed to fetch users');
-                }
-
-                const result = await response.json();
-                const users = Array.isArray(result.data) ? result.data : [];
-                const filteredUsers = query
-                    ? users.filter(user =>
-                        user.name.toLowerCase().includes(query) ||
-                        user.email.toLowerCase().includes(query)
-                    )
-                    : users;
-
-                if (filteredUsers.length === 0) {
-                    userList.innerHTML = '<li>No users found.</li>';
-                    return;
-                }
-
-                userList.innerHTML = filteredUsers.map(user => `
-                    <li style="margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center">
-                        <span><strong>${user.name}</strong> (${user.email})</span>
-                        <button onclick="editUser('${user._id}', '${user.name}', '${user.email}')" style="background:#ffc107;color: black; padding: 4px 8px; font-size:12px; margin-right: 5px;">Edit</button>
-                        <button onclick="deleteUser('${user._id}')" style="background:#dc3545; padding: 4px 8px; font-size:12px;">Delete</button>
-                    </li>
-                `).join('');
-            } catch (err) {
-                console.error('Error searching users:', err);
-                userList.innerHTML = '<li>Failed to load users.</li>';
-            }
-        }
+        const searchInput = document.getElementById('site-search');
+        
+        let allUsers = []; // Store fetched users globally
 
         async function fetchUsers() {
             try {
@@ -114,44 +104,67 @@
                 }
 
                 const result = await response.json();
-                const users = Array.isArray(result.data) ? result.data : [];
-                if (users.length === 0) {
-                    userList.innerHTML = '<li>No users found.</li>';
-                    return;
-                }
-
-                userList.innerHTML = users.map(user => `
-                    <li style="margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center">
-                        <span><strong>${user.name}</strong> (${user.email})</span>
-                        <button onclick="editUser('${user._id}', '${user.name}', '${user.email}')" style="background:#ffc107;color: black; padding: 4px 8px; font-size:12px; margin-right: 5px;">Edit</button>
-                        <button onclick="deleteUser('${user._id}')" style="background:#dc3545; padding: 4px 8px; font-size:12px;">Delete</button>
-                    </li>
-                `).join('');
+                allUsers = Array.isArray(result.data) ? result.data : [];
+                renderUsers(allUsers);
             } catch (err) {
                 console.error('Error fetching users:', err);
                 userList.innerHTML = '<li>Failed to load users.</li>';
             }
         }
 
+        function renderUsers(usersToRender) {
+            if (!Array.isArray(usersToRender) || usersToRender.length === 0) {
+                userList.innerHTML = '<li>No users found.</li>';
+                return;
+            }
+
+            userList.innerHTML = usersToRender.map(user => `
+                <li style="margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center">
+                    <span><strong>${user.name}</strong> (${user.email})</span>
+                    <div>
+                        <button onclick="editUser('${user._id}', '${user.name}', '${user.email}')" style="background:#ffc107;color: black; padding: 4px 8px; font-size:12px; margin-right: 5px;">Edit</button>
+                        <button onclick="deleteUser('${user._id}')" style="background:#dc3545; padding: 4px 8px; font-size:12px;">Delete</button>
+                    </div>
+                </li>
+            `).join('');
+        }
+
+        // Instant filter as you type
+        if (searchInput) {
+            searchInput.addEventListener('input', (e) => {
+                const query = e.target.value.trim().toLowerCase();
+                
+                const filteredUsers = allUsers.filter(user => 
+                    user.name.toLowerCase().includes(query) || 
+                    user.email.toLowerCase().includes(query)
+                );
+
+                renderUsers(filteredUsers);
+            });
+        }
+
+        // Prevent form reload on search submit button click
+        const searchForm = document.getElementById('searchForm');
+        if (searchForm) {
+            searchForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+            });
+        }
+
         async function deleteUser(userId) {
             try {
                 const response = await fetch(`/api/users/${userId}`, { method: 'DELETE' });
                 if (response.ok) {
-                    fetchUsers();
+                    await fetchUsers();
                     showNotification('User deleted successfully!');
                 } else {
-                    console.error('Failed to delete user');
+                    showNotification('Failed to delete user.', true);
                 }
             } catch (err) {
                 console.error('Error deleting user:', err);
                 showNotification('Failed to delete user.', true);
             }
         }
-
-        searchForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            searchUsers();
-        });
 
         userForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -162,18 +175,15 @@
             try {
                 const response = await fetch('/api/users', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ name, email })
                 });
 
                 if (response.ok) {
                     userForm.reset();
-                    fetchUsers();
+                    await fetchUsers();
                     showNotification('User added successfully!');
                 } else {
-                    console.error('Failed to add user');
                     showNotification('Failed to add user.', true);
                 }
             } catch (err) {
@@ -191,16 +201,14 @@
             try {
                 const response = await fetch(`/api/users/${userId}`, {
                     method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ name: newName, email: newEmail })
                 });
 
                 const result = await response.json();
 
                 if (response.ok) {
-                    fetchUsers();
+                    await fetchUsers();
                     showNotification('User updated successfully!');
                 } else {
                     alert(result.error || 'Failed to update user');
@@ -210,17 +218,18 @@
                 console.error('Error updating user:', err);
             }
         }
-        function showNotification(message, isError=false)
-        {
-               const notif = document.getElementById('notification');
-               notif.textContent = message;
-               notif.style.backgroundColor = isError ? '#dc3545' : '#28a745';
-               notif.style.display = 'block';
-               setTimeout(() => {
-                   notif.style.display = 'none';
-               }, 3000);
+
+        function showNotification(message, isError=false) {
+            const notif = document.getElementById('notification');
+            notif.textContent = message;
+            notif.style.backgroundColor = isError ? '#dc3545' : '#28a745';
+            notif.style.display = 'block';
+            setTimeout(() => {
+                notif.style.display = 'none';
+            }, 3000);
         }
 
+        // Initial load
         fetchUsers();
     </script>
 </body>
