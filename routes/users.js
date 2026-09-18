@@ -114,5 +114,25 @@ router.delete('/:id', async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
+router.get('/export/csv', async (req,res) =>
+{
+  try 
+  { 
+
+    const users = await User.find({}); 
+    let csv = 'Name,Email,Role,Created At\n'; 
+    users.forEach(user=> {
+        csv += `"${user.name}","${user.email}","${user.role || 'User'}","${user.createdAt}"\n`;
+    });
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', 'attachment; filename="users_export.csv"');
+    res.status(200).end(csv);
+
+  }
+  catch
+  {
+       res.status(500).json({ error: 'Failed to export users' });
+  }
+});
 
 export default router;
