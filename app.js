@@ -35,9 +35,15 @@ if (savedUsers.length>0)
   console.log(`- [ID: ${firstUser.id}] ${firstUser.name} | Total saved posts: ${firstUser.posts.length}`);
 }
 } 
-document.getElementById('exportBtn').addEventListener('click',()=>
-{
-window.location.href='/api/users/export/csv'; 
+document.addEventListener ('DOMContentLoaded',()=>{
+    const exportBtn = document.getElementById('exportBtn');
+    if(exportBtn)
+    {
+    exportBtn.addEventListener('click',()=>
+    {
+        window.location.href = '/api/users/export/csv';
+    });
+}
 });
 runReaderApp();
 
