@@ -71,7 +71,9 @@
         }
 
         async function searchUsers() {
-            const query = document.getElementById('site-search').value.trim().toLowerCase();
+            const searchInput = document.getElementById('searchInput');
+            if (!searchInput) return;
+            const searchTerm = searchInput.value.toLowerCase();
 
             try {
                 const response = await fetch('/api/users');
@@ -81,10 +83,10 @@
 
                 const result = await response.json();
                 const users = Array.isArray(result.data) ? result.data : [];
-                const filteredUsers = query
+                const filteredUsers = searchInput
                     ? users.filter(user =>
-                        user.name.toLowerCase().includes(query) ||
-                        user.email.toLowerCase().includes(query)
+                        user.name.toLowerCase().includes(searchInput) ||
+                        user.email.toLowerCase().includes(searchInput)
                     )
                     : users;
 
